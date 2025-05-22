@@ -1,0 +1,39 @@
+# .github/workflows/python-app.yml
+
+name: Python application CI
+
+on:
+  push:
+    branches: [ "main", "master" ] # Adapte para o nome da sua branch principal
+  pull_request:
+    branches: [ "main", "master" ] # Adapte para o nome da sua branch principal
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install pytest # Garante que pytest está instalado
+
+    - name: Test with pytest
+      run: |
+        pytest
