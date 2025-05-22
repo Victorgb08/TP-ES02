@@ -158,7 +158,7 @@ class GerenciadorDeTarefas:
         except FileNotFoundError:
             print(f"Arquivo {self.arquivo_json} não encontrado. Iniciando com lista de tarefas vazia.")
             self.tarefas = []
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
             print(f"Erro ao decodificar JSON do arquivo {self.arquivo_json}: {e}. Iniciando com lista vazia.")
             self.tarefas = []
         except (IOError, ValueError) as e: # ValueError pode vir de Tarefa.from_dict
