@@ -89,20 +89,32 @@ class TestTarefa:
         assert tarefa.data_vencimento == "2025-03-03"
         assert tarefa.concluida is True
 
-    def test_from_dict_com_dados_minimos(self):
-        """Testa a criação de uma tarefa a partir de um dicionário com dados mínimos."""
-        dados_dict = {
-            "descricao": "Tarefa Mínima"
-            # id, data_vencimento, concluida são opcionais ou têm defaults
-        }
-        tarefa = Tarefa.from_dict(dados_dict)
-        assert tarefa.descricao == "Tarefa Mínima"
-        assert tarefa.id is not None # Deve gerar um UUID
-        assert tarefa.data_vencimento is None
-        assert tarefa.concluida is False
-
     def test_from_dict_entrada_invalida_levanta_erro(self):
         """Testa que from_dict com entrada não dicionário levanta ValueError."""
         with pytest.raises(ValueError, match="Os dados de entrada devem ser um dicionário."):
             Tarefa.from_dict("não é um dict")
+
+    def test_from_dict_entrada_faltando_chaves_levanta_erro(self):
+        """Testa que from_dict com dicionário faltando chaves obrigatórias levanta KeyError."""
+        dados_dict = {
+            "descricao": "Tarefa Incompleta"
+            # Faltando 'id', 'data_vencimento', 'concluida'
+        }
+        with pytest.raises(KeyError, match="'id'"):
+            Tarefa.from_dict(dados_dict)
+
+    def test_from_dict_entrada_com_chaves_extras(self):
+        """Testa que from_dict aceita dicionário com chaves extras."""
+        dados_dict = {
+            "id": "extra-id",
+            "descricao": "Tarefa Extra",
+            "data_vencimento": "2025-04-04",
+            "concluida": False,
+            "extra_chave": "valor extra"  # Chave extra não deve causar erro
+        }
+        tarefa = Tarefa.from_dict(dados_dict)
+        assert tarefa.id == "extra-id"
+        assert tarefa.descricao == "Tarefa Extra"
+        assert tarefa.data_vencimento == "2025-04-04"
+        assert tarefa.concluida is False
 

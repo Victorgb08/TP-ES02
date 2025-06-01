@@ -60,10 +60,16 @@ class Tarefa:
         """
         if not isinstance(data_dict, dict):
             raise ValueError("Os dados de entrada devem ser um dicionário.")
-        
+
+        # Exige as chaves obrigatórias
+        obrigatorias = ["id", "descricao"]
+        for chave in obrigatorias:
+            if chave not in data_dict:
+                raise KeyError(chave)
+
         return cls(
-            descricao=data_dict.get("descricao"),
+            descricao=data_dict["descricao"],
             data_vencimento=data_dict.get("data_vencimento"),
-            id_tarefa=data_dict.get("id"),
+            id_tarefa=data_dict["id"],
             concluida=data_dict.get("concluida", False),
         )
