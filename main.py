@@ -39,12 +39,14 @@ def exibir_menu():
 def main():
     """Função principal que executa o loop da aplicação CLI."""
     gerenciador = GerenciadorDeTarefas()
+    
+    # CORREÇÃO: Removido o uso de lambdas desnecessárias.
+    # Agora o dicionário armazena as funções diretamente.
     opcoes = {
-        "1": lambda: adicionar_tarefa(gerenciador),
-        "2": lambda: visualizar_tarefas(gerenciador),
-        "3": lambda: marcar_tarefa_como_concluida(gerenciador),
-        "4": lambda: remover_tarefa(gerenciador),
-        "5": None
+        "1": adicionar_tarefa,
+        "2": visualizar_tarefas,
+        "3": marcar_tarefa_como_concluida,
+        "4": remover_tarefa,
     }
 
     while True:
@@ -54,11 +56,17 @@ def main():
         if escolha == "5":
             print("Saindo do Gerenciador de Tarefas. Até logo!")
             break
+        
         acao = opcoes.get(escolha)
         if acao:
+            # A chamada agora funciona, pois passamos o 'gerenciador'
+            # para a função correta (ex: adicionar_tarefa).
             acao(gerenciador)
         else:
-            print("Opção inválida. Por favor, tente novamente.")
+            # A opção "5" não está no dicionário, então o 'get' retorna None.
+            # O caso de opção inválida é tratado aqui.
+            if escolha != "5":
+                print("Opção inválida. Por favor, tente novamente.")
 
 if __name__ == "__main__":
     main()
