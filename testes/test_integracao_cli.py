@@ -6,7 +6,7 @@ import io
 import json
 import re
 from main import main
-from gerenciador_tarefas.logica import GerenciadorDeTarefas # <--- Importe a classe
+from gerenciador_tarefas.logica import GerenciadorDeTarefas
 
 # Define o nome do arquivo de teste para evitar sujar o arquivo de produção
 ARQUIVO_TESTE = "tarefas_teste.json"
@@ -55,7 +55,7 @@ def simular_execucao(monkeypatch, inputs):
         
     return captured_output.getvalue()
 
-# --- Testes de Integração (sem alterações a partir daqui) ---
+# --- Testes de Integração ---
 
 def test_e2e_adicionar_e_visualizar_tarefa(ambiente_limpo, monkeypatch):
     """
@@ -100,7 +100,7 @@ def test_e2e_remover_tarefa(ambiente_limpo, monkeypatch):
     simular_execucao(monkeypatch, ["1", "Tarefa A", "", "1", "Tarefa B", "", "5"])
     
     # Carrega o JSON para pegar o ID da tarefa a ser removida
-    with open(ARQUIVO_TESTE, 'r') as f:
+    with open(ARQUIVO_TESTE, 'r', encoding="utf-8") as f:
         tarefas = json.load(f)
     
     id_tarefa_a = next(t['id'] for t in tarefas if t['descricao'] == 'Tarefa A')
@@ -112,7 +112,7 @@ def test_e2e_remover_tarefa(ambiente_limpo, monkeypatch):
     # Verifica se a mensagem de sucesso da remoção foi exibida
     assert "Tarefa 'Tarefa A' removida com sucesso." in output
     
-    # CORREÇÃO: Verifica a ausência da linha de descrição específica da "Tarefa A"
+    # Verifica a ausência da linha de descrição específica da "Tarefa A"
     # e a presença da linha de descrição da "Tarefa B" na listagem final.
     assert "Descrição: Tarefa A" not in output
     assert "Descrição: Tarefa B" in output
@@ -124,7 +124,8 @@ def test_e2e_persistencia_de_dados_entre_sessoes(ambiente_limpo, monkeypatch):
     simular_execucao(monkeypatch, ["1", "Lembrar de testar a persistência", "", "5"])
     
     assert os.path.exists(ARQUIVO_TESTE)
-    with open(ARQUIVO_TESTE, 'r') as f:
+    # Abre o arquivo com a codificação correta para garantir a portabilidade
+    with open(ARQUIVO_TESTE, 'r', encoding="utf-8") as f:
         data = json.load(f)
         assert len(data) == 1
         assert data[0]['descricao'] == "Lembrar de testar a persistência"
